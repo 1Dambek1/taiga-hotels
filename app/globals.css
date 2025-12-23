@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --color-taiga-snow: #F2F5F3;        /* Светлый / Почти белый */
+  --color-taiga-green: #2A4036;       /* Основной зеленый */
+  --color-taiga-deep: #151C19;        /* Глубокий черный/зеленый */
+  --color-taiga-gold: #C8AA6E;        /* Золото */
+  --color-taiga-accent: #E5E5E5;      /* Серый */
+
+  /* Общий шрифт Manrope */
+  --font-sans: "Manrope", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+}
+
+body {
+  background-color: var(--color-taiga-snow);
+  color: var(--color-taiga-deep);
+  cursor: auto;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-sans);
+}
+
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+  a, button, [role="button"], input, textarea {
+    cursor: none;
+  }
+}
+
+body.loading {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* НОВОЕ: Стили для горизонтального слайдера (Новости) */
+.horizontal-scroll-snap {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 1rem;
+
+  /* КЛЮЧЕВЫЕ ИЗМЕНЕНИЯ ДЛЯ ПЕРЕТАСКИВАНИЯ: */
+  -webkit-overflow-scrolling: touch; /* Улучшение прокрутки на iOS */
+  /* Разрешает горизонтальное панорамирование (перетаскивание) и предотвращает конфликты с вертикальной прокруткой */
+  touch-action: pan-x;
+}
+.horizontal-scroll-snap > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Шум */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url("/grain.png"); /* Предполагаем, что файл зерна есть */
+  opacity: 0.05;
+  z-index: 100; /* Выше основных секций, но ниже курсора/прелоадера */
+}
+
+/* Изменение: скроллбар для модалок */
+.scroll-content::-webkit-scrollbar {
+  width: 4px;
+}
+.scroll-content::-webkit-scrollbar-thumb {
+  background-color: var(--color-taiga-green);
+  border-radius: 2px;
+}
+.scroll-content::-webkit-scrollbar-track {
+  background: var(--color-taiga-snow);
+}
