@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-taiga-snow: #F2F5F3;        /* Светлый / Почти белый */
-  --color-taiga-green: #2A4036;       /* Основной зеленый */
-  --color-taiga-deep: #151C19;        /* Глубокий черный/зеленый */
-  --color-taiga-gold: #C8AA6E;        /* Золото */
-  --color-taiga-accent: #E5E5E5;      /* Серый */
+  --color-taiga-snow: #f2f5f3; /* Светлый / Почти белый */
+  --color-taiga-green: #2a4036; /* Основной зеленый */
+  --color-taiga-deep: #151c19; /* Глубокий черный/зеленый */
+  --color-taiga-gold: #c8aa6e; /* Золото */
+  --color-taiga-accent: #e5e5e5; /* Серый */
 
   /* Общий шрифт Manrope */
   --font-sans: "Manrope", sans-serif;
@@ -25,7 +25,11 @@ body {
   body {
     cursor: none;
   }
-  a, button, [role="button"], input, textarea {
+  a,
+  button,
+  [role="button"],
+  input,
+  textarea {
     cursor: none;
   }
 }
@@ -35,8 +39,13 @@ body.loading {
   height: 100vh;
 }
 
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 /* НОВОЕ: Стили для горизонтального слайдера (Новости) */
 .horizontal-scroll-snap {
@@ -67,7 +76,23 @@ body.loading {
   opacity: 0.05;
   z-index: 100; /* Выше основных секций, но ниже курсора/прелоадера */
 }
+@media (pointer: fine) {
+  /* Применяем скрытие курсора только если НЕ находимся внутри контейнера студии */
+  /* Самый простой способ: Next.js Studio рендерится в отдельном роуте, который не наследует layout сайта, если правильно настроен.
+     Но если наследует, используем :not */
 
+  body:not([data-route^="/studio"]) {
+    cursor: none;
+  }
+
+  body:not([data-route^="/studio"]) a,
+  body:not([data-route^="/studio"]) button,
+  body:not([data-route^="/studio"]) [role="button"],
+  body:not([data-route^="/studio"]) input,
+  body:not([data-route^="/studio"]) textarea {
+    cursor: none;
+  }
+}
 /* Изменение: скроллбар для модалок */
 .scroll-content::-webkit-scrollbar {
   width: 4px;

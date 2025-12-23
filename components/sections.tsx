@@ -8,6 +8,7 @@ import {
 } from "framer-motion";
 import { ArrowUpRight, MapPin, Send, Menu, X } from "lucide-react";
 import { Logo, Section } from "./ui";
+import { submitCareerForm } from "@/app/sections";
 // ... импорт server actions (об этом ниже)
 
 const useIsDesktop = () => {
@@ -56,7 +57,8 @@ export const Header = ({
           {[
             { name: "Отели", id: "hotels" },
             { name: "Вкусы", id: "restaurants" },
-            { name: "События", id: "events" },
+            { name: "Залы", id: "events" },
+            { name: "Новости", id: "news" },
           ].map((item) => (
             <button
               key={item.name}
@@ -440,29 +442,19 @@ export const Events = ({ onEnter, setCursor }: any) => {
         >
           {[
             {
-              name: "Банкет-Холл",
+              name: "Тайга",
               cap: "до 200 персон",
+              img: "",
+              link: "#",
+            },
+            {
+              name: "Азатай",
+              cap: "до 80 персон",
               img: "DSC04009-HDR.jpg",
               link: "#",
             },
-            {
-              name: "Веранда у Реки",
-              cap: "до 80 персон",
-              img: "DSC04031.jpg",
-              link: "#",
-            },
-            {
-              name: "Зал Панорама",
-              cap: "до 500 персон",
-              img: "DSC04013-HDR.jpg",
-              link: "#",
-            },
-            {
-              name: "Лофт",
-              cap: "до 100 персон",
-              img: "DSC04003.jpg",
-              link: "#",
-            },
+
+
           ].map((h, i) => (
             <motion.a
               href={h.link}
@@ -502,23 +494,27 @@ export const Events = ({ onEnter, setCursor }: any) => {
   );
 };
 
-// --- CAREER (Обновлено под форму) ---
 export const Career = ({ onEnter, setCursor }: any) => {
-  const isDesktop = useIsDesktop();
-  const [status, setStatus] = useState<
+  const isDesktop = useIsDesktop(); // Предполагаем, что этот хук есть выше
+  const [formState, setFormState] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setStatus("loading");
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFormState("loading");
 
-    // Здесь должна быть логика отправки на сервер/админку
-    // Для демо сделаем имитацию
-    setTimeout(() => {
-      setStatus("success");
-    }, 1500);
-  };
+    const formData = new FormData(event.currentTarget);
+    const result = await submitCareerForm(formData);
+
+    if (result.success) {
+      setFormState("success");
+      // Сброс формы
+      event.currentTarget.reset();
+    } else {
+      setFormState("error");
+    }
+  }
 
   return (
     <Section onEnter={onEnter} className="py-16 md:py-32 text-taiga-snow">
@@ -532,42 +528,61 @@ export const Career = ({ onEnter, setCursor }: any) => {
               КАРЬЕРА <br />В ТАЙГЕ
             </h2>
             <p className="opacity-80 text-sm md:text-lg mb-6 md:mb-12 max-w-md leading-relaxed">
-              Станьте частью нашей семьи. Мы ценим талант, страсть к
-              гостеприимству и сибирский характер.
+              Станьте частью нашей семьи. Заполните форму, и мы свяжемся с вами.
             </p>
           </div>
+
           <div className="flex-1 w-full bg-black/20 backdrop-blur-md p-6 md:p-12 rounded-lg border border-white/10 shadow-2xl">
-            {status === "success" ? (
-              <div className="text-center py-10">
-                <h3 className="text-2xl font-serif text-taiga-gold mb-2">
-                  Спасибо!
+            {formState === "success" ? (
+              <div className="text-center py-12 animate-in fade-in">
+                <h3 className="text-3xl font-serif text-taiga-gold mb-4">
+                  Заявка принята!
                 </h3>
-                <p>Ваша заявка принята. Мы свяжемся с вами.</p>
+                <p className="opacity-80">
+                  Мы свяжемся с вами в ближайшее время.
+                </p>
+                <button
+                  onClick={() => setFormState("idle")}
+                  className="mt-6 text-xs uppercase tracking-widest border-b border-white/30 hover:border-white pb-1"
+                >
+                  Отправить еще одну
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
-                <input
-                  name="name"
-                  required
-                  type="text"
-                  className="w-full bg-transparent border-b border-white/20 py-2 focus:border-taiga-gold outline-none placeholder-white/20 text-sm"
-                  placeholder="Ваше Имя"
-                />
-                <input
-                  name="phone"
-                  required
-                  type="tel"
-                  className="w-full bg-transparent border-b border-white/20 py-2 focus:border-taiga-gold outline-none placeholder-white/20 text-sm"
-                  placeholder="+7 (___)"
-                />
+                <div>
+                  <input
+                    name="name"
+                    required
+                    type="text"
+                    className="w-full bg-transparent border-b border-white/20 py-2 focus:border-taiga-gold outline-none placeholder-white/20 text-sm transition-colors"
+                    placeholder="Ваше Имя"
+                  />
+                </div>
+                <div>
+                  <input
+                    name="phone"
+                    required
+                    type="tel"
+                    className="w-full bg-transparent border-b border-white/20 py-2 focus:border-taiga-gold outline-none placeholder-white/20 text-sm transition-colors"
+                    placeholder="+7 (___) ___-__-__"
+                  />
+                </div>
+
+                {formState === "error" && (
+                  <p className="text-red-400 text-xs">
+                    Произошла ошибка. Попробуйте еще раз.
+                  </p>
+                )}
+
                 <button
-                  disabled={status === "loading"}
+                  disabled={formState === "loading"}
                   type="submit"
-                  className="w-full bg-taiga-gold text-taiga-deep py-4 font-bold uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2 group text-xs md:text-sm disabled:opacity-50"
+                  className="w-full bg-taiga-gold text-taiga-deep py-4 font-bold uppercase tracking-widest hover:bg-white transition-colors flex items-center justify-center gap-2 group text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   onMouseEnter={() => isDesktop && setCursor(false, "")}
                   onMouseLeave={() => isDesktop && setCursor(false, "")}
                 >
-                  {status === "loading" ? "Отправка..." : "Отправить"}
+                  {formState === "loading" ? "Отправка..." : "Отправить"}
                   <Send
                     size={16}
                     className="group-hover:translate-x-2 transition-transform"
@@ -581,7 +596,6 @@ export const Career = ({ onEnter, setCursor }: any) => {
     </Section>
   );
 };
-
 export const News = ({ onEnter, setCursor }: any) => {
   const isDesktop = useIsDesktop();
   const constraintsRef = useRef(null);
@@ -687,9 +701,9 @@ export const News = ({ onEnter, setCursor }: any) => {
 
 export const Footer = ({ onEnter, setCursor }: any) => {
   const isDesktop = true;
-  const hotels = ["Гранд-отель", "Бутик-отель 'Кедр'", "Шале 'Ангара'"];
-  const restaurants = ["Таёжный Вкус", "Хан Буз", "Байкальская Закуска"];
-  const conferenceHalls = ["Таёжный", "Азатай", "Байкальский"];
+  const hotels = ["Азатай", "Яковлев", "Виктория", "Атлас"];
+  const restaurants = ["Ресторан Азатай", "Ресторан Тайга"];
+  const conferenceHalls = ["Таёжный", "Азатай"];
   const socialLinks = [
     { name: "Telegram", href: "#" },
     { name: "VK", href: "#" },
